@@ -39,7 +39,7 @@ build: format get cp
 	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/matvrus/kbot/cmd.appVersion=${VERSION}
 
 image:
-	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+	docker build . -t ${REGISTRY}/${APP}:${VERSION}${TARGETARCH}
 
 linux:
 	make image APP=linux
