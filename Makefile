@@ -18,7 +18,7 @@ else
 endif
 
 format:
-    gofmt -s -w ./
+	gofmt -s -w ./
 
 lint:
     golint
