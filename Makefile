@@ -1,10 +1,15 @@
+APP=$(shell basename $(shell git remote get-url origin))
 REGISTRY := quay.io/ruslanlap
-VERSION := $(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
-TARGETOS := darwin #linux darwin windows
-TARGETARCH := arm64 #amd64 arm64
-APP := $(shell basename $(shell git remote get-url origin) .git)
-
+VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
+# VERSION=$(dpkg --print-architecture)
+TARGETOS= darwin #linux darwin windows
+#TARGETARCH=$(shell dpkg --print-architecture)
+TARGETARCH=arm64 #amd64 arm64
 BINARY_NAME := ${GOOS}
+LASTIMAGES := $(shell docker images | grep ${REGISTRY}/${APP} | awk '{print $$1":"$$2}')
+
+
+SRC := main.go
 ifeq (${TARGETOS},darwin)
     ifeq (${TARGETARCH},arm64)
         BINARY_NAME := kbot_mac_arm
@@ -27,32 +32,34 @@ test:
 get:
 	go get
 
-# mkdir:
-# 	mkdir -p output/${APP}/${TARGETARCH}
+output:
+	mkdir -p output/${APP}/${TARGETARCH}
 
 cp:
 	cp ${BINARY_NAME} output/${APP}/${TARGETARCH}
 
 build: format get cp
-	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/matvrus/kbot/cmd.appVersion=${VERSION}"
+	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o ${BINARY_NAME} -ldflags "-X github.com/matvrus/kbot/cmd.appVersion=${VERSION}"
 
-image: mkdir
+image: output
 	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
+
 linux:
-	make image APP=linux
+	make image APP=linux TARGETOS=linux
 
 windows:
-	make image APP=windows
+	make image APP=windows TARGETOS=windows
 
 mac:
-	make image APP=mac
+	make image APP=mac TARGETOS=darwin
 
 arm:
-	make image APP=arm
+	make image APP=arm TARGETARCH=armhf TARGETOS=linux
+
 
 push:
-	docker push ${REGISTRY}/${APP}.git:${VERSION}-${TARGETARCH}
+	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
 clean:
 	docker rmi ${LASTIMAGES}
