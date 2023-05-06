@@ -39,7 +39,7 @@ build: format get cp
 	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/matvrus/kbot/cmd.appVersion=${VERSION}
 
 image: mkdir
-	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+	docker build . -t quay.io/ruslanlap/task5:6e60d63-arm64
 
 linux:
 	make image APP=linux
@@ -54,7 +54,7 @@ arm:
 	make image APP=arm
 
 push:
-	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+	docker push quay.io/ruslanlap/task5:6e60d63-arm64
 
 #clean docker rmi
 clean:
