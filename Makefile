@@ -58,4 +58,4 @@ push:
 
 #clean docker rmi
 clean:
-	docker rmi ${LASTIMAGES}
+	docker rmi -f ${LASTIMAGES}
