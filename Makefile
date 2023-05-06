@@ -18,44 +18,44 @@ else
 endif
 
 format:
-    gofmt -s -w ./
+	gofmt -s -w ./
 
 lint:
-    golint
+	golint
 
 test:
-    go test -v 
+	go test -v 
 
 get:
-    go get
+	go get
 
 mkdir:
-    mkdir -p output/${APP}/${TARGETARCH}
+	mkdir -p output/${APP}/${TARGETARCH}
 
 cp:
-    cp ${BINARY_NAME} output/${APP}/${TARGETARCH}
+	cp ${BINARY_NAME} output/${APP}/${TARGETARCH}
 
 build: format get cp
-    CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/matvrus/kbot/cmd.appVersion=${VERSION}
+	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/matvrus/kbot/cmd.appVersion=${VERSION}
 
 image: mkdir
-    docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
 linux:
-    make image APP=linux
+	make image APP=linux
 
 windows:
-    make image APP=windows
+	make image APP=windows
 
 mac:
-    make image APP=mac
+	make image APP=mac
 
 arm:
-    make image APP=arm
+	make image APP=arm
 
 push:
-    docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
 #clean docker rmi
 clean:
-    docker rmi ${LASTIMAGES}
+	docker rmi ${LASTIMAGES}
