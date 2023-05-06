@@ -21,7 +21,7 @@ format:
 	gofmt -s -w ./
 
 lint:
-    golint
+	golint
 
 test:
     go test -v 
