@@ -29,8 +29,8 @@ test:
 get:
 	go get
 
-mkdir:
-	mkdir -p output/${APP}/${TARGETARCH}
+# mkdir:
+# 	mkdir -p output/${APP}/${TARGETARCH}
 
 cp:
 	cp ${BINARY_NAME} output/${APP}/${TARGETARCH}
@@ -38,8 +38,8 @@ cp:
 build: format get cp
 	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/matvrus/kbot/cmd.appVersion=${VERSION}
 
-image: mkdir
-	docker build . -t docker build . -t quay.io/ruslanlap/task5:6e60d63-arm64
+image:
+	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
 linux:
 	make image APP=linux
@@ -58,4 +58,4 @@ push:
 
 #clean docker rmi
 clean:
-	docker rmi -f ${LASTIMAGES}
+	docker rmi ${LASTIMAGES}
