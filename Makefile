@@ -27,8 +27,8 @@ test:
 get:
 	go get
 
-mkdir:
-	mkdir -p output/${APP}/${TARGETARCH}
+# mkdir:
+# 	mkdir -p output/${APP}/${TARGETARCH}
 
 cp:
 	cp ${BINARY_NAME} output/${APP}/${TARGETARCH}
