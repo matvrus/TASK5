@@ -1,13 +1,10 @@
 APP=$(shell basename $(shell git remote get-url origin))
 REGISTRY := quay.io/ruslanlap
 VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
-# VERSION=$(dpkg --print-architecture)
 TARGETOS= darwin #linux darwin windows
-#TARGETARCH=$(shell dpkg --print-architecture)
 TARGETARCH=arm64 #amd64 arm64
 BINARY_NAME := ${GOOS}
 LASTIMAGES := $(shell docker images | grep ${REGISTRY}/${APP} | awk '{print $$1":"$$2}')
-
 
 SRC := main.go
 ifeq (${TARGETOS},darwin)
@@ -21,45 +18,37 @@ else
 endif
 
 format:
-	gofmt -s -w ./
+    gofmt -s -w ./
 
 lint:
-	golint
+    golint
 
 test:
-	go test -v 
+    go test -v 
 
 get:
-	go get
+    go get
 
-output:
-	mkdir -p output/${APP}/${TARGETARCH}
+mkdir:
+    mkdir -p output/${APP}/${TARGETARCH}
 
 cp:
-	cp ${BINARY_NAME} output/${APP}/${TARGETARCH}
+    cp ${BINARY_NAME} output/${APP}/${TARGETARCH}
 
 build: format get cp
-	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o ${BINARY_NAME} -ldflags "-X github.com/matvrus/kbot/cmd.appVersion=${VERSION}"
+    CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/matvrus/kbot/cmd.appVersion=${VERSION}"
 
-image: output
-	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
-
+image: mkdir
+    docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
 linux:
-	make image APP=linux TARGETOS=linux
+    make image APP=linux
 
 windows:
-	make image APP=windows TARGETOS=windows
+    make image APP=windows
 
 mac:
-	make image APP=mac TARGETOS=darwin
+    make image APP=mac
 
 arm:
-	make image APP=arm TARGETARCH=armhf TARGETOS=linux
-
-
-push:
-	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
-
-clean:
-	docker rmi ${LASTIMAGES}
+    make image APP=arm
