@@ -1,0 +1,3 @@
+[submodule "kbot"]
+	path = kbot
+	url = https://github.com/matvrus/kbot
